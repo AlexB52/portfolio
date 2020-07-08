@@ -13,18 +13,27 @@
     <%= javascript_include_tag "site" %>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-31569872-7"></script>
   </head>
-  
-  <body>
+
+  <body class="pages">
     <section id="hero" class="main-section" data-turbolinks-permanent>
       <%= image_tag 'iguazu.jpg' %>
     </section>
 
-    <section id="description" class="main-section">
-      <div class="middle"><%= yield %></div>
+    <section id="content" class="main-section">
+
+      <div class="pure-menu pure-menu-horizontal">
+        <%= link_to 'HOME', '/', class: 'pure-menu-heading pure-menu-link' %>
+        <ul class="pure-menu-list">
+          <li class="pure-menu-item"><%= link_to 'Blog', '/blog', class: 'pure-menu-link' %></li>
+          <li class="pure-menu-item"><%= link_to 'Contact me', '/contact-me', class: 'pure-menu-link' %></li>
+        </ul>
+      </div>
+
+      <div class="content"><%= yield %></div>
     </section>
 
     <% if build? %>
-    <div data-controller="analytics" id="analytics" 
+    <div data-controller="analytics" id="analytics"
       data-action="turbolinks:load@window->analytics#sendPageView"
       data-turbolinks-permanent></div>
     <% end %>
