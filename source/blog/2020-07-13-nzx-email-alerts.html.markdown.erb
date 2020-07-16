@@ -36,24 +36,26 @@ Fill each column as described in the table for each company you want to set a pr
 
 Once your spreadsheet finalised, it is time to make the magic happen with Zapier. Head to [Zapier website](https://zapier.com/) and create a new Zap.
 
-### Step 1: The Trigger
+### Step #1: The Trigger
 
-#### Choose App & Event
+This step configures the event that will trigger the ZAP and maybe send an email. In our case the event that will trigger a potential email is the when a stock Current Price is updated. Follow the steps below to configure properly Zapier.
 
-* Choose App: Google Sheets
-* Choose Trigger Event: New or Updated Spreadsheet Row
+#### 1. Choose App & Event
 
-#### Choose Account
+* **Choose App**: Google Sheets
+* **Choose Trigger Event**: New or Updated Spreadsheet Row
 
-* Google Sheets: Enable OR Choose your Gmail account
+#### 2. Choose Account
 
-#### Customize Spreadsheet Row
+* **Google Sheets**: Enable OR Choose your Gmail account
 
-* Spreadsheet: <Name of your spreadsheet>. Ex: Price Alerts Template
-* Worksheet: <Name of the Tab>. Ex: Alerts
-* Trigger Column: <Name of the column to watch>. Ex: Current Price
+#### 3. Customize Spreadsheet Row
 
-#### Find Data
+* **Spreadsheet**: <Name of your spreadsheet>. Ex: Price Alerts Template
+* **Worksheet**: <Name of the Tab>. Ex: Alerts
+* **Trigger** Column: <Name of the column to watch>. Ex: Current Price
+
+#### 4. Find Data
 
 Test that your spreadsheet is identifying correctly which column to look for updates
 
@@ -66,14 +68,15 @@ Test that your spreadsheet is identifying correctly which column to look for upd
 
 **Proceed to the next step**
 
-### Step 2: The Filter
+### Step #2: The Filter
 
-#### Choose App & Event
-
-* Choose App: Filter by Zapier
-
-#### Filter Setup & Testing
 This step will help Zapier identify whether an email should be sent or not. If your `Alert Triggered` column shows `TRUE`, this is when Zapier should send an email.
+
+#### 1. Choose App & Event
+
+* **Choose App**: Filter by Zapier
+
+#### 2. Filter Setup & Testing
 
 To do so, choose only continue if the Trigger Column `Alert Triggered` is `(Boolean) is True`.
 
@@ -86,28 +89,28 @@ To do so, choose only continue if the Trigger Column `Alert Triggered` is `(Bool
 
 **Proceed to the next step**
 
-### Step 3: The Action
+### Step #3: The Action
 This step configures the email to send when the alert is triggered.
 
-#### Choose App & Event
+#### 1. Choose App & Event
 
-* Choose App: Gmail
-* Choose Action Event: Send Email
+* **Choose App**: Gmail
+* **Choose Action Event**: Send Email
 
-#### Choose Account
+#### 2. Choose Account
 
 * Enable OR Choose your Gmail account
 
-#### Customize Email
+#### 3. Customize Email
 
 Fill the required field to complete that step. You can choose what you want but here are some good defaults.
 
-* To: [your email address]
-* From: [your email address]
-* Subject: [Google Sheets: Company] stock price has reached: [Google Sheets: Current Price]
-* Body: You receive this email from a Zap you created because a NZX company has reached your target price.
+* **To**: [your email address]
+* **From**: [your email address]
+* **Subject**: [Google Sheets: Company] stock price has reached: [Google Sheets: Current Price]
+* **Body**: You receive this email from a Zap you created because a NZX company has reached your target price.
 
-#### Send Data
+#### 4. Send Data
 
 Test that you receive an email and that everything is configured correctly
 
@@ -118,9 +121,9 @@ Test that you receive an email and that everything is configured correctly
   {: refdef}
 </div>
 
-### Step 4: ENABLE YOUR ZAP!
+### Step #4: ENABLE YOUR ZAP!
 
-Done. you'll now receive an email every time, one of a stock price on your spreadhseet meets your target price.
+Done! you'll now receive an email every time, one of a stock price on your spreadhseet meets your target price.
 
 If you want to stop receiving email after the first alert is sent just remove the row on your table.
 
