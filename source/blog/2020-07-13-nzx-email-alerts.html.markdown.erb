@@ -29,13 +29,33 @@ Fill each column as described in the table for each company you want to set a pr
 |C2|Target|The target price you want to set your alert to|$1.2|The number is formatted as a currency|
 |D2|Current Price|The current price of the said stock|=GOOGLEFINANCE(B2)|B2 is NZE:AIR|
 |E2|Price met?|Column showing if your price is met|=C2>=D2|Current Price is less or equal to Target Price|
-|F2|Email Received?|Column to update once you receive an email|=FALSE|Manually updated to =TRUE after the alert is received|
+
+### Enable Automatic Updates
 
 ## Create your first Zap with Zapier
 
 Once your spreadsheet finalised, it is time to make the magic happen with Zapier. Head to [Zapier website](https://zapier.com/) and create a new Zap.
 
 ### Step 1: The Trigger
+
+#### Choose App & Event
+
+* Choose App: Google Sheets
+* Choose Trigger Event: New or Updated Spreadsheet Row
+
+#### Choose Account
+
+* Google Sheets: Enable OR Choose your Gmail account
+
+#### Customize Spreadsheet Row
+
+* Spreadsheet: <Name of your spreadsheet>. Ex: Price Alerts Template
+* Worksheet: <Name of the Tab>. Ex: Alerts
+* Trigger Column: <Name of the column to watch>. Ex: Current Price
+
+#### Find Data
+
+Test that your spreadsheet is identifying correctly which column to look for updates
 
 <div data-controller="collapse" data-collapse-display="block">
   <%= link_to 'Toggle image', '#', data: { action: 'collapse#toggleImage' } %>
@@ -44,7 +64,18 @@ Once your spreadsheet finalised, it is time to make the magic happen with Zapier
   {: refdef}
 </div>
 
+**Proceed to the next step**
+
 ### Step 2: The Filter
+
+#### Choose App & Event
+
+* Choose App: Filter by Zapier
+
+#### Filter Setup & Testing
+This step will help Zapier identify whether an email should be sent or not. If your `Alert Triggered` column shows `TRUE`, this is when Zapier should send an email.
+
+To do so, choose only continue if the Trigger Column `Alert Triggered` is `(Boolean) is True`.
 
 <div data-controller="collapse" data-collapse-display="none">
   <%= link_to 'Toggle image', '#', data: { action: 'collapse#toggleImage' } %>
@@ -53,7 +84,32 @@ Once your spreadsheet finalised, it is time to make the magic happen with Zapier
   {: refdef}
 </div>
 
+**Proceed to the next step**
+
 ### Step 3: The Action
+This step configures the email to send when the alert is triggered.
+
+#### Choose App & Event
+
+* Choose App: Gmail
+* Choose Action Event: Send Email
+
+#### Choose Account
+
+* Enable OR Choose your Gmail account
+
+#### Customize Email
+
+Fill the required field to complete that step. You can choose what you want but here are some good defaults.
+
+* To: [your email address]
+* From: [your email address]
+* Subject: [Google Sheets: Company] stock price has reached: [Google Sheets: Current Price]
+* Body: You receive this email from a Zap you created because a NZX company has reached your target price.
+
+#### Send Data
+
+Test that you receive an email and that everything is configured correctly
 
 <div data-controller="collapse" data-collapse-display="none">
   <%= link_to 'Toggle image', '#', data: { action: 'collapse#toggleImage' } %>
@@ -61,3 +117,10 @@ Once your spreadsheet finalised, it is time to make the magic happen with Zapier
   ![trigger](2020-07-13-nzx-email-alerts/3-the-action-opt.gif)
   {: refdef}
 </div>
+
+### Step 4: ENABLE YOUR ZAP!
+
+Done. you'll now receive an email every time, one of a stock price on your spreadhseet meets your target price.
+
+If you want to stop receiving email after the first alert is sent just remove the row on your table.
+
