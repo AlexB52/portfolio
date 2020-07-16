@@ -9,6 +9,7 @@ html, body#layout {
 
 html, body#blog {
   height:unset;
+  footer { height:10rem; }
 }
 
 .my-auto {margin-bottom:auto; margin-top:auto;}
