@@ -12,7 +12,7 @@ tags: Google, NZX, Gmail, Zapier
 
 In this article, I'll detail how to get price alerts emailed to you for any NZX company stock prices. All you need is a Gmail and Zapier account! You can create a zapier account [here](https://zapier.com/)
 
-## The Google Spreadsheet
+## #1 - The Google Spreadsheet
 
 Create a Google spreadsheet as shown on the screenshot. You can download a [template](https://docs.google.com/spreadsheets/d/1m1yOnZ0Hk26PsN-LD4xiHbLo9bCmHLoaInlYLmHytOc/edit?usp=sharing) to help you out.
 
@@ -28,13 +28,19 @@ Fill each column as described in the table for each company you want to set a pr
 |B2|Code|The Google Finance Symbol of the company|NZE:AIR||
 |C2|Target|The target price you want to set your alert to|$1.2|The number is formatted as a currency|
 |D2|Current Price|The current price of the said stock|=GOOGLEFINANCE(B2)|B2 is NZE:AIR|
-|E2|Price met?|Column showing if your price is met|=C2>=D2|Current Price is less or equal to Target Price|
+|E2|Alert Triggered?|Column showing if your price is met|=C2>=D2|Current Price is less or equal to Target Price|
 
 ### Enable Automatic Updates
 
-## Create your first Zap with Zapier
+In the spreadsheet settings, you need to set the calculations to `on change and every minute` so that your spreadsheet keeps being updated after you close it.
 
-Once your spreadsheet finalised, it is time to make the magic happen with Zapier. Head to [Zapier website](https://zapier.com/) and create a new Zap.
+![spreadsheet](2020-07-13-nzx-email-alerts/spreadsheet-settings.png)
+
+## #2 - Create a Zap with Zapier
+
+Once your spreadsheet finalised, it is time to make the magic happen with Zapier.
+
+Head to [Zapier website](https://zapier.com/) and create a new Zap.
 
 ### Step #1: The Trigger
 
@@ -70,7 +76,7 @@ Test that your spreadsheet is identifying correctly which column to look for upd
 
 ### Step #2: The Filter
 
-This step will help Zapier identify whether an email should be sent or not. If your `Alert Triggered` column shows `TRUE`, this is when Zapier should send an email.
+This step will help Zapier identify whether an email should be sent or not. If your `Alert Triggered?` column shows `TRUE`, this is when Zapier should send an email.
 
 #### 1. Choose App & Event
 
@@ -78,7 +84,7 @@ This step will help Zapier identify whether an email should be sent or not. If y
 
 #### 2. Filter Setup & Testing
 
-To do so, choose only continue if the Trigger Column `Alert Triggered` is `(Boolean) is True`.
+To do so, choose only continue if the Trigger Column `Alert Triggered?` is `(Boolean) is True`.
 
 <div data-controller="collapse" data-collapse-display="none">
   <%= link_to 'Toggle image', '#', data: { action: 'collapse#toggleImage' } %>
@@ -125,5 +131,5 @@ Test that you receive an email and that everything is configured correctly
 
 Done! you'll now receive an email every time, one of a stock price on your spreadhseet meets your target price.
 
-If you want to stop receiving email after the first alert is sent just remove the row on your table.
+If you want to stop receiving an email after the first alert is sent just remove the row on your table.
 
