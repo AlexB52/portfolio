@@ -3,8 +3,12 @@
 @import 'contact-me.scss';
 @import 'blog.scss';
 
-html, body {
+html, body#layout {
   height:100%;
+}
+
+html, body#blog {
+  height:unset;
 }
 
 .my-auto {margin-bottom:auto; margin-top:auto;}
