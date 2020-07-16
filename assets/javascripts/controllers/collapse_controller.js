@@ -11,7 +11,18 @@ export default class extends Controller {
     this.imageTarget.style.display = this.display
   }
 
+  toggleImage(event) {
+    event.preventDefault()
+
+    this.display = (this.display === 'none') ? 'block' : 'none'
+  }
+
   get display() {
-    return this.data.get('display');
+    return this.data.get('display')
+  }
+
+  set display(value) {
+    this.data.set('display', value)
+    this.displayImage()
   }
 }
