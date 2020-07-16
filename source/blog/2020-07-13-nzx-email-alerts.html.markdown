@@ -36,10 +36,25 @@ Fill each column as described in the table for each company you want to set a pr
 Once your spreadsheet finalised, it is time to make the magic happen with Zapier. Head to [Zapier website](https://zapier.com/) and create a new Zap.
 
 ### Step 1: The Trigger
-![trigger](2020-07-13-nzx-email-alerts/1-the-trigger-opt.gif)
+
+<div data-controller="collapse" data-collapse-display="block">
+  {:refdef: data-target="collapse.image"}
+  ![trigger](2020-07-13-nzx-email-alerts/1-the-trigger-opt.gif)
+  {: refdef}
+</div>
 
 ### Step 2: The Filter
-![trigger](2020-07-13-nzx-email-alerts/2-the-filter-opt.gif)
+
+<div data-controller="collapse" data-collapse-display="none">
+  {:refdef: data-target="collapse.image"}
+  ![trigger](2020-07-13-nzx-email-alerts/2-the-filter-opt.gif)
+  {: refdef}
+</div>
 
 ### Step 3: The Action
-![trigger](2020-07-13-nzx-email-alerts/3-the-action-opt.gif)
+
+<div data-controller="collapse" data-collapse-display="none">
+  {:refdef: data-target="collapse.image"}
+  ![trigger](2020-07-13-nzx-email-alerts/3-the-action-opt.gif)
+  {: refdef}
+</div>
