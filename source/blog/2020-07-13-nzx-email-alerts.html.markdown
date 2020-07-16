@@ -6,6 +6,7 @@ description: In this article, I'll detail how to get price alerts emailed to you
 tags: Google, NZX, Gmail, Zapier
 
 ---
+{::options parse_block_html="true" /}
 
 # Free NZX Email Alerts
 
@@ -35,8 +36,10 @@ Fill each column as described in the table for each company you want to set a pr
 Once your spreadsheet finalised, it is time to make the magic happen with Zapier. Head to [Zapier website](https://zapier.com/) and create a new Zap.
 
 ### Step 1: The Trigger
-![trigger](2020-07-13-nzx-email-alerts/the-trigger.gif)
+![trigger](2020-07-13-nzx-email-alerts/1-the-trigger-opt.gif)
 
 ### Step 2: The Filter
+![trigger](2020-07-13-nzx-email-alerts/2-the-filter-opt.gif)
 
 ### Step 3: The Action
+![trigger](2020-07-13-nzx-email-alerts/3-the-action-opt.gif)
