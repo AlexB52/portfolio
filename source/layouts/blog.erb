@@ -27,8 +27,10 @@
       <%= yield %>
     </div>
 
-    <footer class="d-flex flex-items-center lead">
-      <p class="mx-auto">End of article</p>
+    <footer class="">
+      <p class="lead text-center mt-3">End of article</p>
+      <p class="lead text-center">If you ave any questions, feel free to <%= link_to 'Contact me', '/contact-me', class: 'btn btn-primary' %>
+      </p>
     </footer>
 
     <% if build? %>
