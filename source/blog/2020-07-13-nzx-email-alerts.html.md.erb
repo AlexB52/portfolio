@@ -11,19 +11,19 @@ social_media: social-media-2.png
 
 # NZX Email Alerts
 
-In this article, I'll detail how to get price alerts emailed to you for any NZX company stock prices. All you need is a Gmail and Zapier account! You can create a zapier account [here](https://zapier.com/)
+In this article, I'll detail how to get price alerts emailed to you for any NZX listed company. All you need is a Gmail and a Zapier account! You can create a zapier account [here](https://zapier.com/)
 
 ![social-media](2020-07-13-nzx-email-alerts/social-media-1.png)
 
 ## #1 - The Google Spreadsheet
 
-Create a Google spreadsheet as shown on the screenshot. You can download a [template](https://docs.google.com/spreadsheets/d/1m1yOnZ0Hk26PsN-LD4xiHbLo9bCmHLoaInlYLmHytOc/edit?usp=sharing) to help you out.
+Create a Google spreadsheet as shown on the screenshot below. You can download a [template](https://docs.google.com/spreadsheets/d/1m1yOnZ0Hk26PsN-LD4xiHbLo9bCmHLoaInlYLmHytOc/edit?usp=sharing) to help you out.
 
 ![spreadsheet](2020-07-13-nzx-email-alerts/spreadsheet-template.png)
 
 ### The columns
 
-Fill each column as described in the table for each company you want to set a price alert.
+Fill each column as described in the table below for each company you want to set a price alert for.
 
 |Cell|Column|Description|Example|Comment|
 |-
@@ -41,13 +41,13 @@ In the spreadsheet settings, you need to set the calculations to `on change and 
 
 ## #2 - Create a Zap with Zapier
 
-Once your spreadsheet finalised, it is time to make the magic happen with Zapier.
+Once your spreadsheet is finalised, it is time to make the magic happen with Zapier.
 
-Head to [Zapier website](https://zapier.com/) and create a new Zap.
+Head to [Zapier's website](https://zapier.com/) and create a new Zap.
 
 ### Step #1: The Trigger
 
-This step configures the event that will trigger the ZAP and maybe send an email. In our case the event that will trigger a potential email is the when a stock Current Price is updated. Follow the steps below to configure properly Zapier.
+This step configures the event that will trigger the ZAP, in our case, an update to the current stock price will trigger an email alert. Follow the steps below to properly configure Zapier.
 
 #### 1. Choose App & Event
 
@@ -66,7 +66,7 @@ This step configures the event that will trigger the ZAP and maybe send an email
 
 #### 4. Find Data
 
-Test that your spreadsheet is identifying correctly which column to look for updates
+Test that your spreadsheet is identifying correctly which column to look at for updates.
 
 <div data-controller="collapse" data-collapse-display="block">
   <%= link_to 'Toggle image', '#', data: { action: 'collapse#toggleImage' } %>
@@ -110,14 +110,14 @@ This step configures the email to send when the alert is triggered.
 
 * Enable OR Choose your Gmail account
 
-#### 3. Customize Email
+#### 3. Customise Email
 
 Fill the required field to complete that step. You can choose what you want but here are some good defaults.
 
 * **To**: [your email address]
 * **From**: [your email address]
 * **Subject**: [Google Sheets: Company] stock price has reached: [Google Sheets: Current Price]
-* **Body**: You receive this email from a Zap you created because a NZX company has reached your target price.
+* **Body**: You have received this email from a Zap you created because a NZX company has reached your target price.
 
 #### 4. Send Data
 
