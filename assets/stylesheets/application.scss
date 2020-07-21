@@ -7,8 +7,8 @@ html, body#layout {
   height:100%;
 }
 
-html, body#blog {
-  height:unset;
+body#blog {
+  height:auto;
   footer { height:10rem; }
 }
 
