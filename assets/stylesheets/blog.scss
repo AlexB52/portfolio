@@ -1,3 +1,4 @@
 .markdown-body { max-width:768px;
-  img { @extend .Box }
+  img { @extend .Box; }
+  pre { background-color:unset; }
 }
