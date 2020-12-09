@@ -1,12 +1,27 @@
 import hljs from 'highlight.js/lib/core';
 import ruby from 'highlight.js/lib/languages/ruby';
-hljs.registerLanguage('ruby', ruby);
+import erb from 'highlight.js/lib/languages/erb';
+
 import { Controller } from "stimulus"
 
 export default class extends Controller {
-  static targets = ["code"]
+  static targets = ["ruby", "erb"]
+
+  initialize() {
+    hljs.registerLanguage('ruby', ruby);
+    hljs.registerLanguage('erb', erb);
+  }
 
   connect() {
-    this.codeTargets.forEach(block => hljs.highlightBlock(block, ruby))
+    this.initializeRuby()
+    this.initializeERB()
+  }
+
+  initializeRuby() {
+    this.rubyTargets.forEach(block => hljs.highlightBlock(block, ruby))
+  }
+
+  initializeERB() {
+    this.erbTargets.forEach(block => hljs.highlightBlock(block, erb))
   }
 }

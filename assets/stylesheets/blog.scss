@@ -1,4 +1,7 @@
 .markdown-body { max-width:768px;
   img { @extend .Box; }
-  pre { background-color:unset; }
+}
+
+.markdown-body .highlight, .markdown-body {
+  pre { background-color:#232323; }
 }
