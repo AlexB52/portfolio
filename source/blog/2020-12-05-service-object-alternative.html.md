@@ -1,8 +1,8 @@
 ---
 
-title: Alternative To Service Object In Rails
+title: Service Objects, An Alternative
 date: 2020-12-05 10:00 UTC
-description: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+description: In this article, I described an alternative to service objects encountered in Rails codebases.
 tags: Rails, ActiveModel, Service Object
 <!-- social_media: social-media-2.png -->
 
@@ -10,22 +10,15 @@ tags: Rails, ActiveModel, Service Object
 
 {::options parse_block_html="true" /}
 
-# Rails - Alternative to Service Objects
+# Service Objects: An Alternative
 
-Service Objects... Some think it is a best practice, others an anti-pattern that we should stop using now. More comments start to pop up and challenge this pattern:
+**Service objects are overused. There, I said it.** This pattern has become the default solution for any new features in a Rails codebase. Service objects mean different things for different people. Here is how I define them:
 
-* [Reddit: Where did concept of service object come from?](https://www.reddit.com/r/rails/comments/itivdn/where_did_concept_of_service_object_come_from/)
-* [Jason Swett: Beware of “service objects” in Rails](https://www.codewithjason.com/rails-service-objects/)
+* Any class which have **one** public `#perform` or `#call` method.
+* Any class which name describes an action.
+* Example: `PublishApprovedPost.perform(post: @post)`
 
-Service objects mean different things for different people. Here is what I consider a service object.
-
-* A class which interface has **one** public `#perform` or `#call` method.
-* A class which name describes an action (verb + adjective + noun).
-* Example: `CreatePublishedPost.perform(post: @post)`
-
-**Service objects are overused, here, I said it**. This pattern becomes the default for any feature in Rails but this article won't discuss the pros and cons of service objects. This article is an attempt to describe a different implementation where a service object would generally be used. The intent is to enlarge our options as Rails devs and show another take.
-
-The solution in this post uses **ActiveModel** on a non ActiveRecord class, this is pretty old stuff and has been documented many times.
+The intent of the article is to broaden our options as Rails developers and describes an alternative to using service objects with **ActiveModel** on Plain Old Ruby Objects. This is a reliable but undervalued approach that should be part of every Rails developer's toolbox. The article outlines this method in further detail.
 
 ## The feature - Publish / Unpublish a Post
 
@@ -33,7 +26,7 @@ The feature we're going to implement here is a simple publish/unpublish action o
 
 ![publication feature](2020-12-05-service-object-alternative/publication-feature.gif)
 
- Nothing fancy a Post has a body and a title and can belong to a Publisher. Here are the model definitions:
+ Nothing fancy here a `Post` can be `:published` and can belong to a `Publisher`
 
 ~~~ruby
   # config/routes.rb
@@ -66,10 +59,10 @@ The feature we're going to implement here is a simple publish/unpublish action o
 
 ### The Service Object Way
 
-Let's start by describing quickly how we would tackle this with service objects. Roughly we would add `#new_publication`, `#publish` and `#unpublish` routes to the post resources and define them on posts_controller.rb. Then create two new services. **PublishPost** & **UnpublishPost**
+Let's start by quickly describing how we would tackle this with service objects. Roughly we would add `#new_publication`, `#publish` and `#unpublish` routes to the `Post` resources and define them on `PostsController.rb`. Then create two new services: **PublishPost** & **UnpublishPost**
 
 ~~~ruby
-  # routes
+  # config/routes.rb
   resources :posts do
     get :new_publication, on: :member
     put :publish, on: :member
@@ -100,45 +93,52 @@ Let's start by describing quickly how we would tackle this with service objects.
 
 ##### Form Errors
 
-First thing that comes to mind is the error handling and how to display those on the views. You'll most likely have to tweak your `_form` partial to display errors appropriately because it doesn't fit quite the Rails way with ActiveRecord:
+The first thing that comes to mind is how errors are handled and displayed on the view. You'll most likely have to tweak your `_form.html.erb` partial to display errors appropriately because the service object solution doesn't match the Rails approach like ActiveRecord does. To handle errors:
 
 * You might create a view or a form object to handle this part correctly.
 * You might proxy errors to the post model and reference `@post` in your `new_publication` view.
-* You might have an errors array that you loop through in your view.
+* You might loop through a custom array of errors in your view or include `ActiveModel::Validations` to your service.
 
-With time, devs using service objects will probably end up with a solution to solve this that they'll apply across all their routes. From my experience this is rarely the case and multiple implementations of error handling or form views are spread across the codebase. Devs then spend time going against the Rails way to fulfill the use of service objects.
+With time, devs using service objects will probably end up with a solution to solve this that they'll apply across all their routes. From experience, this is rarely the case and multiple implementations of error handling or form views are spread across the codebase. Devs spend time going against Rails just to use service objects.
 
 ##### Controller routes
 
-I admit, this one is not inherently a service object's flaw. You could use service objects with dedicated RESTful routes. I generally see this implementation paired with service objects for some reason. The `posts_controller` now has three more actions and is likely to grow when you'll want to archive, review or approve a post. This is likely to make the controller really difficult to maintain in the future.
+I admit this one is not inherently a service object flaw. You could use service objects with dedicated RESTful routes. I generally see this implementation paired with service objects for some reason. The `posts_controller` now has three more actions and is likely to grow when you want to archive, review or approve a post. This is likely to make the controller difficult to maintain in the future.
 
-**Idea for improvement:** Routes are not for ActiveRecord classes only.
+**Idea:** Routes are not just for ActiveRecord classes.
+
+##### Hidden Code
+
+We now have one service for each action which makes it hard to update the code in all the relevant places. Updating the publish service could require updating the unpublish service which is easily forgotten.
+
+**Idea:** Nothing stops a service class having multiple methods. Even the Command Design Pattern, which feels similar to service objects, does consider providing a pair of `#execute` & `#undo` methods. The single responsibility principle is pushed to its extreme making it hard to maintain code and giving a false sense of decoupling.
 
 ##### Reusability
 
-The trap of services is to think that they are DRY and reusable. What I generally witness is the idea that a service is so good at doing one thing that it can be reused in other services. This is where the nightmare starts. Those services become bloated by conditions and edge cases once reused. After a while you end up with a lentghy perfom method with nested ifs. This trap is too easy to fall in.
+The trap of services is to think that they are DRY and reusable. The idea is that a service is so good at doing one thing that it can be reused in other services. This is where the nightmare starts. Those services become bloated by conditions and edge cases once reused. After a while, you end up with a lengthy perform method with nested ifs. This trap is too easy to fall in.
 
-**Idea for improvement:** Service classes share the same interface and could use polymorphism. Nothing stops a factory to present the right type of `CreatePost` service to the object needing it. That said, we tend to handle all use cases in one class method from a single class.
+**Idea:** Service classes share the same interface and could use polymorphism. Nothing stops a factory from presenting the right type of service to its client. That said, we tend to handle all use cases in one single class.
 
 ### REST & ActiveModel to the rescue.
 
-This new implementation comes down to two things:
+This new implementation comes down to three things:
 
+* Using **ActiveModel**
 * Replacing verbs in classes by nouns
 * Sticking to REST actions only: `[:index, :new, :create, :edit, :update, :destroy]`
 
-Instead publishing and unpublishing a post, we consider creating a publication and destroying a publication for a post.
+Instead of publishing and unpublishing a post, we consider creating a publication and destroying a publication for a post.
 
 * `PublishPost#perform` becomes `Publication#create`
 * `UnpublishPost#perform` becomes `Publication#destroy`.
 
 #### The Model - Publication
 
-First there is this idea of a **Publication**. So let's create that class in `app/models/publication.rb`. The publication takes on argument a post and is accessible through `Post#publication` instance method. That class inherits `ActiveModel::Model` which provides all the methods for a class to act as an ActiveRecord class in the routes, views and controllers context.
+First, there is this idea of a **Publication**. So let's create that class in `app/models/publication.rb`. The publication takes one argument, a post record, and is accessible through a `Post#publication` instance method. That class inherits `ActiveModel::Model` which provides all the methods for a class to act as an ActiveRecord in routes, views and controllers. It even handles I18n out of the box.
 
-* The Publication has two methods `#create` & `#destroy` which are next to each other instead of in seperate classes.
-* The publication has its own validations system. We could also make Publication and Post share the same errors.
-* The publication can be used in form views without worrying of hardcoding routes or partial names.
+* The Publication has two methods `#create` & `#destroy` which are next to each other instead of separate classes.
+* The publication has its own validations system. *We could also make Publication and Post share the same errors.*
+* The publication can be used in form views without worrying of hardcoding routes, partial names or use a custom view form.
 
 ~~~ruby
   class Post < ApplicationRecord
@@ -184,7 +184,7 @@ First there is this idea of a **Publication**. So let's create that class in `ap
 
 #### The routes
 
-To keep things restful we then update our routes to use publication namespace. Follwing Rails conventions between the ActiveModel and the routes makes it really easy to configure.
+To keep things RESTful we then update our routes to use publication namespace. Following Rails conventions between the ActiveModel and the routes makes it easy to configure.
 
 ~~~ruby
   resources :posts do
@@ -195,7 +195,7 @@ To keep things restful we then update our routes to use publication namespace. F
 
 #### The controller
 
-Nothing fancy here, it takes 2 minutes to read and the controller is not overloaded with other custom methods that adds to the mental load. The controller breathes Rails conventions and we can barely distinguish it from a controller generated through the `rails g scaffold` command.
+Nothing fancy here, it takes 2 minutes to read and the controller is not overloaded with custom methods. The controller breathes Rails conventions and we can barely distinguish it from a controller generated through the `rails g scaffold` command.
 
 ~~~ruby
   # app/controllers/publications_controller.rb
@@ -235,6 +235,10 @@ Nothing fancy here, it takes 2 minutes to read and the controller is not overloa
 
 #### The view
 
+The new publication page uses the form helper and errors without requiring fancy hacks. It recognises which route to submit the form and easily matches publication attributes with input fields. No hardcoded form that we then need to parse in the controller or another form object.
+
+The lengthy block in the view (the errors) is a straight copy-paste from a generated view with a `rail g scaffold` command.
+
 ~~~erb
   <h1>New Publication</h1>
 
@@ -267,6 +271,30 @@ Nothing fancy here, it takes 2 minutes to read and the controller is not overloa
 ~~~
 {: data-target="code-highlighter.erb"}
 
+### Conclusion
 
+With the ActiveModel implementation, the view (and form), the controller and the model collaborate the same way ActiveRecords would: with perfect harmony. It is elegant, it is simple to understand, it feels right. Why are we not seeing more of this and less of service objects?
 
-[ActiveModel Form Objects](https://thoughtbot.com/blog/activemodel-form-objects)
+#### The beauty of it
+
+To be honest the advice given in this article can also be implemented with service objects:
+
+* Nothing stops us from sticking to REST routes with service objects.
+* Nothing stops us from including ActiveModel in service objects.
+* Nothing stops us from having more than one public method in service objects.
+
+To some extent, the Publication model is probably more similar to the Command Design Pattern than the service objects implementation described in this article is.
+
+#### It is too simple
+
+The problem with examples like this one is that they end up being discarded straight away by senior developers who argue  they are too simple to address the complexity of production code in practice. This is similar to the way senior developers may discard OOP practices in Sandi Metz books for example.
+
+While this might be a natural instinct it may not help you grow as a dev. I would challenge developers to persevere and not fall back on service objects too soon. Just because you've hit a hurdle with ActiveModel doesn't mean it's impossible. The majority of Rails codebases aren't that special and yours is probably no exception.
+
+#### Further Reading
+
+Service objects... Some see them as best practice, others as an anti-pattern. They are well established in the Rails community but increasingly new developers are challenging them.
+
+* [Reddit: Where did the concept of service object come from?](https://www.reddit.com/r/rails/comments/itivdn/where_did_concept_of_service_object_come_from/)
+* [Reddit: Is command pattern a common thing in the industry?](https://www.reddit.com/r/rails/comments/jvxhew/is_command_pattern_a_common_thing_in_the_industry/)
+* [Jason Swett: Beware of “service objects” in Rails](https://www.codewithjason.com/rails-service-objects/)
