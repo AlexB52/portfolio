@@ -59,7 +59,7 @@ The feature we're going to implement here is a simple publish/unpublish action o
 
 ### The Service Object Way
 
-Let's start by quickly describing how we would tackle this with service objects. Roughly we would add `#new_publication`, `#publish` and `#unpublish` routes to the `Post` resources and define them on `PostsController.rb`. Then create two new services: **PublishPost** & **UnpublishPost**
+Let's start by quickly describing how we would tackle this with service objects. Roughly we would add `#new_publication`, `#publish` and `#unpublish` routes to the `:post` resources. Then create two new services: **PublishPost** & **UnpublishPost**
 
 ~~~ruby
   # config/routes.rb
@@ -99,7 +99,7 @@ The first thing that comes to mind is how errors are handled and displayed on th
 * You might proxy errors to the post model and reference `@post` in your `new_publication` view.
 * You might loop through a custom array of errors in your view or include `ActiveModel::Validations` to your service.
 
-With time, devs using service objects will probably end up with a solution to solve this that they'll apply across all their routes. From experience, this is rarely the case and multiple implementations of error handling or form views are spread across the codebase. Devs spend time going against Rails just to use service objects.
+With time, devs using service objects will probably end up with a solution that they'll apply on all their views. From experience, this is rarely the case and multiple implementations of error handling or form views are spread across the codebase. Devs spend time going against Rails just to use service objects.
 
 ##### Controller routes
 
@@ -275,7 +275,7 @@ The lengthy block in the view (the errors) is a straight copy-paste from a gener
 
 With the ActiveModel implementation, the view (and form), the controller and the model collaborate the same way ActiveRecords would: with perfect harmony. It is elegant, it is simple to understand, it feels right. Why are we not seeing more of this and less of service objects?
 
-#### The beauty of it
+#### Plot Twist
 
 To be honest the advice given in this article can also be implemented with service objects:
 
