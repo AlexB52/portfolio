@@ -13,4 +13,11 @@ tags: Rails, ActiveRecord, Concerns, Testing
 
 # Testing ActiveRecord Concerns
 
-Hello
+This article describes a way to test your concerns in isolation from the class they are included in. It will focus on ActiveRecord concerns because those classes have a tight relationship with the database and can make it hard to in isolation.
+
+The article will 
+
+## What are concerns?
+
+Concerns are the Rails way to add a role to a Ruby class. Rails provides by default two folders: `app/controllers/concerns` and `app/models/concerns` to nudge you on where they should belong.
+
