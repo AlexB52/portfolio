@@ -91,13 +91,13 @@ end
 ~~~
 {: data-target="code-highlighter.ruby"}
 
-Let's take a moment to appreciate how explicit this is. The test displays all the information to teach future devs on how `Reviewable` concern is used: how the role is granted and the simplest schema required for an ActiveRecord to acquire the role. To understand what `Reviewable` does, someone can open `'path/to/reviewable/shared/examples'` and eliminate all the noise from huge test files by only seeing the tests related to `Reviewable` behaviour.
+Let's take a moment to appreciate how explicit this is. The test displays all the information to teach future devs on how `Reviewable` concern is setup: how the role is granted and the simplest schema required for an ActiveRecord to acquire the role. To understand what `Reviewable` does, someone can open `'path/to/reviewable/shared/examples'` and eliminate all the noise from huge test files by only seeing the tests related to `Reviewable` behaviour.
 
 ## Why test concerns in isolation?
 
 Switching to an isolated table to test concerns ensure that concerns are decoupled from the first ActiveRecord class they've been introduced into, `Post` in this example.
 
-Failing to extract and test your concern in another class than the original active record class is not reusable. It is also a smell that the role is not fully understood or is the wrong abstraction.
+Failing to extract and test your concern in another class than the original ActiveRecord class is not reusable. It is also a smell that the role is not fully understood or is the wrong abstraction.
 
 Having the concern tested this way gives more confidence in reusing `Reviewable` with any ActiveRecord class that has a `reviewed_at:datetime` column in its table.
 
@@ -126,7 +126,7 @@ end
 
 ### Concerns and Fakes
 
-A role/concern is meant to be shared with other Ruby classes. Currently, `Reviewable` is only included in the `Post` model but nothing stops us from including it in other classes, especially testing classes. To do so we extract the role tests into shared tests and include those in the `post_spec.rb` file and a `reviewable_spec.rb` file like so:
+A role/concern is meant to be shared with other Ruby classes. Currently, `Reviewable` is only included in the `Post` model but nothing stops us from including it in other classes, especially testing classes. To do so we extract the role tests into shared tests and include those in the `post_spec.rb` and a `reviewable_spec.rb` files:
 
 ~~~ruby
 shared_examples 'reviewable'do
@@ -196,18 +196,12 @@ shared_examples 'reviewable'do
   end
 
   describe '#reviewed?' do
-    subject { reviewable.assign_attributes(reviewed_at: reviewed_at).reviewed? }
+    it 'returns the correct boolean based on #reviewed_at' do
+      reviewable.reviewed_at = nil
+      expect(reviewable.reviewed?).to eql false
 
-    context 'when reviewed_at is nil' do
-      let(:reviewed_at) { nil }
-
-      it { is_expected.to be false }
-    end
-
-    context 'when reviewed_at is present' do
-      let(:reviewed_at) { DateTime.current }
-
-      it { is_expected.to be true }
+      reviewable.reviewed_at = DateTime.current
+      expect(reviewable.reviewed?).to eql true
     end
   end
 
@@ -235,7 +229,7 @@ end
 ~~~
 {: data-target="code-highlighter.ruby"}
 
-While this causes no problem for `Post`, our `FakeReviewable` class is now in trouble. Few methods in the tests are now referring to ActiveRecord behaviours such as `#reload` or `#assign_attributes`. Even the `Reviewable` module is using the `#update` method. It is clear that this concern is only to be used with ActiveRecord classes. We could fight against ActiveRecord but a nice workaround is to embrace it and define `FakeReviewable` class as one like so:
+While this causes no problem for `Post`, our `FakeReviewable` class is now in trouble. Few methods in the tests are now referring to ActiveRecord behaviours such as `#reload` or `#assign_attributes`. Even the `Reviewable` module is using the `#update` method. It is clear that this concern is only to be used with ActiveRecord classes. We could fight against ActiveRecord but a nice workaround is to embrace it and define `FakeReviewable` as one ActiveRecord class:
 
 ~~~ruby
 require_relative 'path/to/reviewable/shared/examples'
@@ -387,7 +381,7 @@ end
 
 ### What about testing the scopes?
 
-The article is quite long already the same priciples would apply to test scopes. If you're interested in a fully working spec suite, here is a GIST.
+The article is quite long already the same priciples would apply to test scopes. If you're interested in a fully working spec suite, here is the [Gist: Testing ActiveRecord Concerns](https://gist.github.com/AlexB52/0e186b6bd5220d42351f5cffe47439e7).
 
 ### Tests are fast
 
