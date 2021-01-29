@@ -4,6 +4,7 @@ title: Testing ActiveRecord Concerns
 date: 2021-01-14 10:00 UTC
 description: This article outlines how I test Rails concerns used on ActiveRecord models
 tags: Rails, ActiveRecord, Concerns, Testing
+social_media: roles.jpg
 published: false
 
 ---
@@ -13,6 +14,14 @@ published: false
 <small style="float:right;"> _14January 2021_ </small>
 
 # Testing ActiveRecord Concerns
+
+<div class="hero">
+  ![publication feature](2021-01-14-testing-model-concerns/roles.jpg)
+  <small class="d-block text-center">
+    <span>Photo by <a href="https://unsplash.com/photos/p6rNTdAPbuk">Kyle Head</a> on <a href="https://unsplash.com/s/photos/hope?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
+  </small>
+</div>
+
 
 ActiveRecord classes manage persistence and have a tight relationship with the database table they're assigned to. This relationship makes testing sometimes tricky and even trickier when testing Rails concerns. This article describes how to test those concerns used in isolation from its ActiveRecord class and its associated database table.
 
@@ -64,7 +73,7 @@ In this example we'll look at a `Reviewable` concern that is included in an Acti
 
 ## TL;DR Solution
 
-Here is the gist for people looking to see how it is done. The main idea is to test every concerns with a vanilla ApplicationRecord class connected to a temporary database table. If you're interested to see how this works keep reading!
+Here is the gist for people looking to see how it is done: [complete solution][gist]. The main idea is to test every concerns with a vanilla ApplicationRecord class connected to a temporary database table. If you're interested to see how this works keep reading!
 
 ~~~ruby
 require_relative 'path/to/reviewable/shared/examples'
@@ -196,12 +205,14 @@ shared_examples 'reviewable'do
   end
 
   describe '#reviewed?' do
-    it 'returns the correct boolean based on #reviewed_at' do
-      reviewable.reviewed_at = nil
-      expect(reviewable.reviewed?).to eql false
+    subject { described_class.new }
 
-      reviewable.reviewed_at = DateTime.current
-      expect(reviewable.reviewed?).to eql true
+    it 'returns the correct boolean based on #reviewed_at' do
+      subject.reviewed_at = nil
+      expect(subject.reviewed?).to eql false
+
+      subject.reviewed_at = DateTime.current
+      expect(subject.reviewed?).to eql true
     end
   end
 
@@ -381,21 +392,69 @@ end
 
 ### What about testing the scopes?
 
-The article is quite long already the same priciples would apply to test scopes. If you're interested in a fully working spec suite, here is the [Gist: Testing ActiveRecord Concerns](https://gist.github.com/AlexB52/0e186b6bd5220d42351f5cffe47439e7).
+The article is quite long already the same priciples would apply to test scopes. If you're interested in a fully working spec suite, here is the [Gist: Testing ActiveRecord Concerns][gist].
 
 ### Tests are fast
 
-Tests run on a in memory `SQLite` test database are really fast, faster than using MySQL or PostgreSQL to test your application.
+Tests run on a `SQLite memory` database are fast, faster than using MySQL or PostgreSQL to test your application. Here is a quick benchmark to show the differences between Postgresql, SQLite file and in memory databases. The result show the creation of a thousand posts on a rails console with each adapter.
 
-Add benchmark
+~~~ruby
+Post.create! title: 'title1'
+~~~
+{: data-target="code-highlighter.ruby"}
+
+~~~bash
+                  user     system      total        real
+SQLite memory 0.517279   0.046638   0.563917 (  0.568118)
+Postgresql    0.732682   0.094636   0.827318 (  1.079383)
+SQLite file   1.233583   0.692713   1.926296 (  2.064371)
+~~~
+{: data-target="code-highlighter.bash"}
+
 
 ### Cost of switching
 
-I have not benchmarked / profiled the cost of switching database connections during tests. Our current test suite time doesn't seem to have been impacted.
+Our current test suite time doesn't seem to have been impacted. Here is a quick benchmark showing the cost of instantiating a inmemory sqlite database and switching back to postgresql.
 
-I love Minitest but I am not aware of a standard method to run expensive task before a group of test like RSpec does with `before(:all)` .
+~~~ruby
+Benchmark.bm do |x|
+  x.report do
+    1_000.times do
+      ActiveRecord::Base.establish_connection(adapter: "sqlite3", database: ":memory:")
+      ActiveRecord::Schema.define(version: 1) do
+        create_table :posts do |t|
+          t.string :title
+        end
+      end
+      ApplicationRecord.establish_connection(ApplicationRecord.configurations['development'])
+    end
+  end
+end
 
-If switching connection and instantiating an in memory database is a significant perfomance issue, some investigation is required when using Minitest and switching before every single test requiring a temporary database.
+~~~
+{: data-target="code-highlighter.ruby"}
+
+~~~bash
+    user     system      total        real
+0.223940   0.029933   0.253873 (  0.254775)
+~~~
+{: data-target="code-highlighter.bash"}
+
+Switching locally to a inmemory sqlite database for some tests is not taking too long to instantiate. With those results, we could even consider switching before every test that requires a temporary database without being too significant (based on your number of specs).
+
+~~~bash
+(0.0ms)  SELECT sqlite_version(*)
+(0.1ms)  CREATE TABLE "posts" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "title" varchar)
+(0.1ms)  CREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)
+(0.1ms)  SELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC
+(0.1ms)  INSERT INTO "schema_migrations" (version) VALUES (1)
+(0.1ms)  CREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)
+~~~
+{: data-target="code-highlighter.bash"}
+
+### Minitest
+
+I love Minitest but I am not aware of a standard method to run expensive task before a group of test like RSpec does with `before(:all)` . One way would be to use [minitest-hooks gem][minitest-hooks] which helps you wrap expensive task in a similar fashion than RSpec.
 
 ### Raw SQL queries and database syntax
 
@@ -405,6 +464,5 @@ This method of testing concerns will work for most of the use cases, however, co
 
 In this case, another testing approach would be required for that specific concern. Hopefully, raw SQL are the exception and not the standard in your Rails codebase.
 
-### Rails 6 & Delegated Types
-
-I'm using this with Rails 5.2 but I wonder whether Delegated Types could help testing concerns too.
+[gist]: https://gist.github.com/AlexB52/0e186b6bd5220d42351f5cffe47439e7
+[minitest-hooks]: https://github.com/jeremyevans/minitest-hooks
