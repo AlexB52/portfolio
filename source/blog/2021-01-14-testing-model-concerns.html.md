@@ -5,7 +5,6 @@ date: 2021-01-14 10:00 UTC
 description: This article outlines how I test Rails concerns used on ActiveRecord models
 tags: Rails, ActiveRecord, Concerns, Testing
 social_media: masks.jpg
-published: false
 
 ---
 
@@ -29,7 +28,7 @@ The code examples are written using RSpec and switching to Minitest is possible 
 
 ## What are concerns?
 
-Concerns are the Rails way to grant a role, include a module to a Ruby class. It provides a nicer syntax than Ruby and aims to clarify confusion around dependencies when used with nested modules. Here is the [documentation](https://api.rubyonrails.org/v6.1.0/classes/ActiveSupport/Concern.html).
+Concerns are the Rails way to grant a role or interface to a Ruby class. It provides a nicer syntax than Ruby and aims to clarify confusion around dependencies when used with nested modules. Here is the [documentation](https://api.rubyonrails.org/v6.1.0/classes/ActiveSupport/Concern.html).
 
 
 ## Example: The Reviewable Concern
@@ -115,7 +114,7 @@ Having the concern tested this way gives more confidence in reusing `Reviewable`
 
 ### Concerns and their interface
 
-In OOP, to successfully test a role you need to define and test its public interface and Rails concerns are no exception. Because it is included in the `Post` model, we start by writing the interface tests in the `post_spec.rb` file.
+In OOP, to successfully test a role you need to define and test its public interface and so do Rails concerns are no exception. Because it is included in the `Post` model, we start by writing the interface tests in the `post_spec.rb` file.
 
 ~~~ruby
 describe Post do
@@ -199,6 +198,7 @@ shared_examples 'reviewable'do
 
     it 'has the correct interface' do
       expect(subject).to respond_to(:reviewed?)
+      expect(subject).to respond_to(:review)
       expect(described_class).to respond_to(:reviewed)
       expect(described_class).to respond_to(:unreviewed)
     end
@@ -318,7 +318,7 @@ But this will still not work, as `FakeReviewable` class is attached to the `post
 
 In an ideal world, we would need a `fake_reviewables` table with a single `reviewed_at` columns so that we remove the need for `title` and `author_id` to be populated. One way to do this is to create a dedicated `fake_reviewables` testing table in your `schema.rb` but that table will also end up in your production database.
 
-While we could argue that this is no big deal and there is nothing wrong in having testing tables in production, I'll end this article with some code on how to switch to an in-memory SQLite `fake_reviewables` table.
+While we could argue that this is no big deal and there is nothing wrong with having testing tables in production, I'll end this article with some code on how to switch to an in-memory SQLite `fake_reviewables` table.
 
 One way to do this is to include helpers to switch to an in-memory database. Here is the `InMemoryDatabaseHelpers` module and its usage with `FakeReviewable`.
 
@@ -388,11 +388,19 @@ end
 ~~~
 {: data-target="code-highlighter.ruby"}
 
-## Food for thoughts
+## Food for thought
 
-### What about testing the scopes?
+### What about testing scopes?
 
 The article is quite long already the same principles would apply to test scopes. If you're interested in a fully working spec suite, here is the [Gist: Testing ActiveRecord Concerns][gist].
+
+### Raw SQL queries
+
+Most of SQL syntax is shared across the mainstream databases and thanks to Rails the SQL is also abstracted in a DSL.
+
+This method of testing concerns will work for most of the use cases, however, concerns introducing raw SQL queries can be a problem. Raw SQL queries can use different syntax between MySQL, SQLite or PostgreSQL. For example, PostgreSQL has a specific syntax for window functions like `OVER (PARTITION BY x)` which I think doesn't exist in SQLite.
+
+In this case, another testing approach would be required for that specific concern. Hopefully, raw SQLs are the exception and not the standard in your Rails codebase.
 
 ### Tests are fast
 
@@ -414,7 +422,7 @@ SQLite file   1.233583   0.692713   1.926296 (  2.064371)
 
 ### Cost of switching
 
-Our current test suite time doesn't seem to have been impacted. Here is a quick benchmark showing the cost of instantiating an in-memory SQLite database and switching back to PostgreSQL.
+We haven't properly profiled our test suite but our current CI time doesn't seem to have been impacted. Here is a quick benchmark showing the cost of instantiating an in-memory SQLite database and switching back to PostgreSQL.
 
 ~~~ruby
 Benchmark.bm do |x|
@@ -440,7 +448,7 @@ end
 ~~~
 {: data-target="code-highlighter.bash"}
 
-Switching locally to an in-memory SQLite database for some tests is not taking too long to instantiate. With those results, we could even consider switching before every test that requires a temporary database without being too significant (based on your number of specs).
+Switching locally to an in-memory SQLite database for some tests is not taking too long to instantiate. With those results, we could even consider switching before every test that requires a temporary database without being too significant.
 
 ~~~bash
 (0.0ms)  SELECT sqlite_version(*)
@@ -455,14 +463,6 @@ Switching locally to an in-memory SQLite database for some tests is not taking t
 ### Minitest
 
 I love Minitest but I am not aware of a standard method to run expensive tasks before a group of test like RSpec does with `before(:all)`. One way would be to use [minitest-hooks gem][minitest-hooks] which helps you wrap expensive task in a similar fashion than RSpec.
-
-### Raw SQL queries and database syntax
-
-SQL syntax is shared across the mainstream databases and thanks to Rails the SQL is also abstracted in a DSL.
-
-This method of testing concerns will work for most of the use cases, however, concerns introducing raw SQL queries will be a problem. Raw SQL queries can use different syntax between MySQL, SQLite or PostgreSQL. For example, PostgreSQL has a specific syntax for window functions like `OVER (PARTITION BY x)` which I think doesn't exist in SQLite.
-
-In this case, another testing approach would be required for that specific concern. Hopefully, raw SQLs are the exception and not the standard in your Rails codebase.
 
 [gist]: https://gist.github.com/AlexB52/0e186b6bd5220d42351f5cffe47439e7
 [minitest-hooks]: https://github.com/jeremyevans/minitest-hooks
