@@ -11,7 +11,7 @@ description: How to improve a specific type of service object and, who knows, ge
 
 <small style="float:right;"> _11 June 2021_ </small>
 
-# Your service object, probably, has the wrong responsibility
+# Your service object has probably the wrong responsibility
 
 <div class="hero">
   ![publication feature](2021-06-11-your-service-object-probably-has-the-wrong-responsibility/be-the-change.jpg)
