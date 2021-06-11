@@ -199,7 +199,7 @@ The `#query` method is way simpler and easier to read. The class in which `#quer
 
 ### The factory
 
-We can have a factory that chooses simpler classes that generates specific hashes and return the class of the hash result to the service object. Something like this:
+We can have a factory that chooses the appropriate to  to generate the correct payload and return it to the service object. Something like this:
 
 ~~~ruby
 class CustomerPayload
