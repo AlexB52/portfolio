@@ -10,7 +10,7 @@ description: This article describes how to skip existing rails validations for s
 
 {::options parse_block_html="true" /}
 
-<small style="float:right;"> _14January 2021_ </small>
+<small style="float:right;"> _14 January 2021_ </small>
 
 # Skipping Existing ActiveRecord Validations
   
