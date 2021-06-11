@@ -2,9 +2,9 @@
 
 title: Reflect on past commits
 date: 2020-08-25 09:33 UTC
-description: Can you understand your old code? A quick way to reflect and give feedback to your past self.
 tags: git, continuous improvement, bash, feedback. retrospective.
 social_media: code.jpg
+description: Can you understand your old code? A quick way to reflect and give feedback to your past self.
 
 ---
 {::options parse_block_html="true" /}

@@ -2,9 +2,9 @@
 
 title: Testing ActiveRecord Concerns
 date: 2021-01-14 10:00 UTC
-description: This article outlines how to test Rails concerns used on ActiveRecord models with temporary database tables.
 tags: Rails, ActiveRecord, Concerns, Testing
 social_media: masks.jpg
+description: How to test Rails concerns for ActiveRecord models with temporary database tables.
 
 ---
 

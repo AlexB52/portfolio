@@ -1,10 +1,10 @@
 ---
 
-title: An alternative to Service Objects
+title: An Alternative to Service Objects
 date: 2020-12-05 10:00 UTC
-description: This article outlines how to use ActiveModel::Model to substitute service objects encountered in Rails codebases.
 tags: Rails, ActiveModel, Service Object
 social_media: hope.jpg
+description: How to use ActiveModel::Model to substitute service objects encountered in Rails codebases.
 
 ---
 

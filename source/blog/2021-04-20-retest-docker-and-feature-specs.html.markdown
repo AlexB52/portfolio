@@ -3,7 +3,7 @@
 title: Retest - Docker & Feature Specs
 date: 2021-04-20 05:38 UTC
 tags: docker, E2E tests, retest, feature spec, github action, github workflow
-description: This article describes the end-to-end (2E2) testing setup using Docker for a ruby gem called retest.
+description: This article describes the Docker setup used in the end-to-end (2E2) testing of my ruby gem retest.
 
 ---
 

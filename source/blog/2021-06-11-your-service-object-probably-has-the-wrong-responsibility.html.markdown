@@ -1,9 +1,9 @@
 ---
 
-title: Your service object probably does too much
+title: Your Service Object Does Too Much
 date: 2021-06-11 01:28 UTC
 tags: rails,service objects,single responsibility
-description: This article describes how to improve your service object and maybe, who knows, get rid of it completely.
+description: How to improve a specific type of service object and, who knows, get rid of it completely.
 
 ---
 
@@ -11,7 +11,7 @@ description: This article describes how to improve your service object and maybe
 
 <small style="float:right;"> _11 June 2021_ </small>
 
-# Your service object probably has the wrong responsibility
+# Your service object, probably, has the wrong responsibility
 
 <div class="hero">
   ![publication feature](2021-06-11-your-service-object-probably-has-the-wrong-responsibility/be-the-change.jpg)
