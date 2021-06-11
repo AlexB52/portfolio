@@ -4,7 +4,6 @@ title: Your service object probably does too much
 date: 2021-06-11 01:28 UTC
 tags: rails,service objects,single responsibility
 description: This article describes how to improve your service object and maybe, who knows, get rid of it completely.
-published: false
 
 ---
 
@@ -23,12 +22,12 @@ published: false
   </small>
 </div>
 
-I often come across service object classes like `CreatePurchase` or `PostCustomerReceipt` which creates a record on the database and/or performs a HTTP query to a third party. Often that class has a `#call` method which does two things:
+I often come across service object classes like `CreatePurchase` or `PostCustomerReceipt` which creates a record on the database and/or performs an HTTP query to a third party. Often that class has a `#call` method that does two things:
 
 * generates a hash of values
 * uses the ruby hash to create a record or perform a query
 
-_**Disclaimer**: I try as much as possible to explain my points with working code or something really close to reality. However, today I'll use imaginary ruby code._
+_**Disclaimer**: I try as much as possible to explain my points with working code or something close to reality. However, today I'll use imaginary ruby code._
 
 Services I described are used in those situations:
 
@@ -62,7 +61,7 @@ The class in which `#query` is defined knows way too much about the customer, an
 
 ### Focus: the attention is on the wrong part of the code
 
-While the service is about performing an action, it is likely that another class already has this responsibility. What is important is how the hash is generated. Those services put the focus on a unimportant part of the code, the action, when the parameters used to perform the action is probably what requires more attention.
+While the service is about acting, it is likely that another class already has this responsibility. What is important is how the hash is generated. Those services put the focus on an unimportant part of the code, the action, when the parameters used to act is probably what requires more attention.
 
 > **Often the #call method is identical between service objects and the only difference lies in how the Hash is generated...**
 
@@ -135,7 +134,7 @@ end
 
 ### Testing
 
-Because it is advised to only test public interfaces, the `#call` method is the only one getting tested. The tests often stubs clients and put expectation on the parameters passed. Sometimes private methods get tested too because it is too uncertain...
+Because it is advised to only test public interfaces, the `#call` method is the only one getting tested. The tests often stub clients and put expectation on the parameters passed. Sometimes private methods get tested too because it is too uncertain...
 
 Something like this:
 
@@ -168,13 +167,13 @@ end
 ~~~
 {: data-target="code-highlighter.ruby"}
 
-This can get really frustrating when validations need tests too.
+This can get frustrating when validations need tests too.
 
 ## Why extracting the logic out of the service?
 
-If you have made it this far, you can start to see where I'm going. Our service class does too much and we'll probably win by moving the hash generation logic into its own class. **Who knows we might even get rid of the service entirely (hooray!).**
+If you have made it this far, you can start to see where I'm going. Our service class does too much and we'll probably win by moving the hash generation logic into its class. **Who knows we might even get rid of the service entirely (hooray!).**
 
-Let's consider a class which responsibility is to provide the correct ruby hash to a service object, an active record or a http client like so:
+Let's consider a class whose responsibility is to provide the correct ruby hash to a service object, an active record or an HTTP client like so:
 
 ~~~ruby
 # with a service object
@@ -238,7 +237,7 @@ _You can have a factory that uses the correct service object instead but remembe
 
 ### Testing
 
-Each `Payload.to_h` method can be tested separately which is easier to understand. The tests will document how each hash is supposed to look like based on contexts.
+Each `Payload.to_h` method can be tested separately which is easier to understand. The tests will document how each hash is supposed to look based on contexts.
 
 ~~~ruby
 require 'rails_helper'
@@ -264,14 +263,14 @@ end
 
 ## Conclusion 
 
-This is fictive example but if you use service objects it's likely that you've encountered some similar use cases. Service objects are overused and this type of refactoring can potentially remove the need for those types entirely. Future devs will thank you for it.
+This is a fictive example but if you use service objects you've likely encountered some similar use cases. Service objects are overused and this type of refactoring can potentially remove the need for those types entirely. Future devs will thank you for it.
 
 ### Pushing it further
 
 Other steps to improve the code would be to:
 
 * rename `Payload` classes with something closer to the domain you are coding for.
-* include `ActiveModel::Serialization` to generate the hash in an elegant manner.
+* include `ActiveModel::Serialization` to generate the hash elegantly.
 * include `ActiveModel::Validations` for a validation framework.
 * include `ActiveModel::Model` for maximum brownie points.
 
