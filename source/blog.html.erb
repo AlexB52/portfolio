@@ -1,6 +1,8 @@
 <h1>Blog</h1>
 
-<% blog.articles.each do |article| %>
+<% articles = blog.articles.reject { |article| article.title == "Your Service Object Does Too Much" } %>
+
+<% articles.each do |article| %>
   <article class="mb-3">
     <h1 class="h3"><%= link_to article.title, article.url %></a></h1>
     <p><%= article.data.description%></p>
