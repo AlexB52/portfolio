@@ -12,9 +12,6 @@ description: How to improve a specific type of service object and, who knows, ge
 
 <small style="float:right;"> _11 June 2021_ </small>
 
-
-<h2 style="color:red;">This article is currently being rewritten. It addresses the wrong problem and people find it confusing. Sorry :(</h2>
-
 # Service object alternatives: Serializers
 
 <div class="hero">
@@ -28,7 +25,7 @@ description: How to improve a specific type of service object and, who knows, ge
 
 I often come across service object classes like `CreatePurchase` or `PostCustomerReceipt` which create a record on the database and/or perform an HTTP query to a third party. Often that class has a `#call` method that does two things:
 
-* generates a hash of values
+* serializes the parameters passed in
 * uses the ruby hash to create a record or perform a query
 
 _**Disclaimer**: I usually explain my points with working code or something close to reality; however, today I'll use imaginary ruby code._
@@ -37,49 +34,29 @@ Services I described are used in these situations:
 
 ~~~ruby
 def query
-  case customer.colour
-  when 'yellow' 
-    QueryYellowCustomer.call(
-      customer: customer,
-      services: customer.services
-    )
-  when 'red' 
-    QueryRedCustomer.call(
-      customer: customer,
-      bills: customer.bills
-    )
-  when 'blue' 
-    QueryBlueCustomer.call(
-      customer: customer
-    )
-  end
+  QueryCustomer.call(customer: customer)
 end
 ~~~
 {: data-target="code-highlighter.ruby"}
 
 ## Why do I try to avoid this?
 
-### Too much knowledge
-
-The class in which `#query` is defined knows way too much about the customer, and the way to perform the query action.
-
 ### Focus: the attention is on the wrong part of the code
 
-While the service is about acting, it is likely that another class already has this responsibility. What is important is how the hash is generated. Those services put the focus on an unimportant part of the code... the action. The parameters used to act is probably what requires more attention.
+While the service is about acting, it is likely that another class already has this responsibility. What is important is how customer gets serialized. Those services put the focus on an unimportant part of the code... the action. The parameters used to act is probably what requires more attention.
 
-> **Often the #call method is identical between service objects and the only difference lies in how the hash is generated...**
+> **Sometimes these types of service objects have the same implementation of #call method, only the serialization of parameters differs.**
 
 Those classes often look something like this:
 
 ~~~ruby
-class QueryYellowCustomer < QueryCustomer
+class QueryCustomer < QueryCustomer
   def self.call(**args)
     new(**args).call
   end
 
-  def initialize(customer:, bills:)
+  def initialize(customer:)
     @customer = customer
-    @bills = bills
   end
 
   def call
@@ -134,7 +111,7 @@ end
 ~~~
 {: data-target="code-highlighter.ruby"}
 
-**The class handles errors, validations, query and generates the payload. Most of the methods are private and used to generate the hash. It looks noisy and hard to understand.**
+**The class handles errors, validations, query and generates the payload. Most of the methods are private used to serialize customer. It looks noisy and hard to understand.**
 
 ### Testing
 
@@ -145,9 +122,9 @@ Something like this:
 ~~~ruby
 require 'rails_helper'
 
-RSpec.describe QueryYellowCustomer do
+RSpec.describe QueryCustomer do
   let(:customer) { create(:customer, :important_trait) }
-  let(:service) { described_class.new(customer:customer, bills: customer.bills) }
+  let(:service) { described_class.new(customer:customer) }
 
   describe '#call' do
     subject { service.call }
@@ -164,18 +141,18 @@ RSpec.describe QueryYellowCustomer do
   end
 
   describe '#payload' do
-    subject { service.send(:payload) } # :see_no_evil:
+    subject { service.send(:payload) } # 🙈
     # ...
   end
 end
 ~~~
 {: data-target="code-highlighter.ruby"}
 
-This can get frustrating when validations need tests too.
+There are few code smells here. We generate the expected payload calling a private method and then stub the client call used in the service with the payload. We're not testing much here...
 
 ## Why extract the logic out of the service?
 
-If you have made it this far, you can start to see where I'm going. Our service class does too much and we'll probably win by moving the hash generation logic into its class. **Who knows we might even get rid of the service entirely (hooray!).**
+If you have made it this far, you can start to see where I'm going. Our service class does too much and we'll probably win by extracting the serialization logic into a class. **Who knows we might even get rid of the service entirely (hooray!).**
 
 Let's consider a class whose responsibility is to provide the correct ruby hash to a service object, an active record or an HTTP client like so:
 
@@ -197,73 +174,55 @@ end
 ~~~
 {: data-target="code-highlighter.ruby"}
 
-### Easier to understand
+### Focus: attention is now on performing an action with correct parameters
 
-The `#query` method is way simpler and easier to read. The class in which `#query` is defined doesn't need to know anything about the customer, its colour and the different classes to call. It orchestrates the action by trusting `CustomerPayload` to return the correct hash.
-
-### The factory
-
-We can have a factory that chooses the appropriate class to generate the payload and return it to the service object.
-
-~~~ruby
-class CustomerPayload
-  def self.to_h(customer)
-    case customer.colour
-    when 'yellow' then YellowPayload
-    when 'red'    then RedPayload
-    when 'blue'   then BluePayload
-    else               Payload
-    end.to_h(customer: customer)
-  end
-
-  class Payload
-    # generate the ruby hash
-  end
-
-  class YellowPayload
-    # generate the ruby hash
-  end
-
-  class RedPayload
-    # generate the ruby hash
-  end
-
-  class BluePayload
-    # generate the ruby hash
-  end
-end
-
-~~~
-{: data-target="code-highlighter.ruby"}
-
-_You can have a factory that uses the correct service object instead but remember those generally have the same `#call` method and use a different generated hash._
-
+Sometimes `QueryCustomer` can be ditched completely because it becomes is an unecessary wrapper around a client or an active record model. Sometimes, you still need a wrapper and that is totally fine. Testing the class is now easier and the developer attention can be on validations or error handling instead of the serializing mess across the whole service object class.
 
 ### Testing
 
-Each `Payload.to_h` method can be tested separately which is easier to understand. The tests will document how each hash is supposed to look based on contexts.
+`Payload.to_h` method can be tested separately which is easier to understand. The tests will document how each hash is supposed to look based on contexts.
 
 ~~~ruby
 require 'rails_helper'
 
-RSpec.describe YellowPayload do
+RSpec.describe CustomerPayload do
   describe '.to_h' do
-    let(:bills) { [build(:bill)] }
-    let(:customer) { create(:customer, :important_trait, bills: bills) }
+    let(:customer) { create(:customer) }
 
     subject { described_class.to_h(customer: customer) }
 
-    it { is_expected.to eql({}) # hardcoded hash }
+    it { is_expected.to eql({ ... }) # hardcoded hash }
 
     context 'when bills are important' do
       let(:bills) { [build(:bill, :important)] }
 
-      it { is_expected.to eql({}) # another hardcoded hash }
+      it { is_expected.to eql({ ... }) # another hardcoded hash }
     end
   end
 end
 ~~~
 {: data-target="code-highlighter.ruby"}
+
+~~~ruby
+require 'rails_helper'
+
+RSpec.describe QueryCustomer do
+  describe '#call' do
+    subject { described_class.call(payload: { hello: 'world' }) }
+
+    it 'calls the client with the correct payload' do
+      expect(Client).to receive(:query) 
+                    .with('/url', hello: 'world')
+                    .and_return(true)
+      
+      subject
+    end
+  end
+end
+~~~
+{: data-target="code-highlighter.ruby"}
+
+We have control over what we're testing, this test is simple, yet effective. In this case, the service object could be reused with any `payload` and not just be a specific implementation for a specific query on a specific customer.
 
 ## Conclusion 
 
@@ -274,7 +233,7 @@ This is a fictive example but if you use service objects you've likely encounter
 Other steps to improve the code would be to:
 
 * rename `Payload` classes with something closer to the domain you are coding for.
-* include `ActiveModel::Serialization` to generate the hash elegantly.
+* include `ActiveModel::Serialization` to generate the hash elegantly in `CustomerPayload`.
 * include `ActiveModel::Validations` for a validation framework.
 * include `ActiveModel::Model` for maximum brownie points.
 
