@@ -1,6 +1,6 @@
 ---
 
-title: Skipping Existing ActiveRecord Validations
+title: Skipping existing ActiveRecord validations
 date: 2021-05-13 23:48 UTC
 tags: rails,validations,validation context, activerecord
 description: How to skip existing rails validations for validations contexts.
@@ -12,7 +12,7 @@ description: How to skip existing rails validations for validations contexts.
 
 <small style="float:right;"> _14 January 2021_ </small>
 
-# Skipping Existing ActiveRecord Validations
+# Skipping existing ActiveRecord validations
   
 <div class="hero">
   ![publication feature](2021-05-13-skip-existing-validations-in-rails/validations.jpeg)

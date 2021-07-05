@@ -1,6 +1,6 @@
 ---
 
-title: Testing ActiveRecord Concerns
+title: Testing ActiveRecord concerns
 date: 2021-01-14 10:00 UTC
 tags: Rails, ActiveRecord, Concerns, Testing
 social_media: masks.jpg

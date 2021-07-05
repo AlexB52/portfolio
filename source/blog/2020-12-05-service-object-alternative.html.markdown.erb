@@ -1,8 +1,9 @@
 ---
 
-title: An Alternative to Service Objects
+title: "ActiveModel - Service object alternatives"
+priority_title: "Service object alternatives: ActiveModel"
 date: 2020-12-05 10:00 UTC
-tags: Rails, ActiveModel, Service Object
+tags: Rails, ActiveModel, Service Object, service object alternatives
 social_media: hope.jpg
 description: How to use ActiveModel::Model to substitute service objects encountered in Rails codebases.
 
@@ -41,6 +42,7 @@ The feature we're going to implement is a simple **publish/unpublish** action on
   resources :posts
 ~~~
 {: data-target="code-highlighter.ruby"}
+
 ~~~ruby
   # app/models/post.rb
   class Post < ApplicationRecord
@@ -57,6 +59,7 @@ The feature we're going to implement is a simple **publish/unpublish** action on
   end
 ~~~
 {: data-target="code-highlighter.ruby"}
+
 ~~~ruby
   # app/models/publisher.rb
   class Publisher < ApplicationRecord
@@ -80,6 +83,7 @@ Let's start by describing how we would tackle this with service objects. We woul
   end
 ~~~
 {: data-target="code-highlighter.ruby"}
+
 ~~~ruby
   # app/controllers/posts_controller.rb
   def new_publication
@@ -164,6 +168,7 @@ First, there is this idea of a **Publication**. So let's create that class in `a
   end
 ~~~
 {: data-target="code-highlighter.ruby"}
+
 ~~~ruby
   class Publication
     include ActiveModel::Model
@@ -256,32 +261,32 @@ The lengthy block in the view (the errors) is a straight copy-paste from a `rail
 ~~~erb
   <h1>New Publication</h1>
 
-  <%= form_with(model: [@publication.post, @publication], local: true) do |form| %>
-    <% if @publication.errors.any? %>
+  <%%= form_with(model: [@publication.post, @publication], local: true) do |form| %>
+    <%% if @publication.errors.any? %>
       <div id="error_explanation">
-        <h2><%= pluralize(@publication.errors.count, "error") %> prohibited this @publication from being saved:</h2>
+        <h2><%%= pluralize(@publication.errors.count, "error") %> prohibited this @publication from being saved:</h2>
 
         <ul>
-          <% @publication.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-          <% end %>
+          <%% @publication.errors.full_messages.each do |message| %>
+            <li><%%= message %></li>
+          <%% end %>
         </ul>
       </div>
-    <% end %>
+    <%% end %>
 
     <div class="field">
-      <%= form.label :publisher_id, value: 'Publisher' %>
-      <%= form.collection_select :publisher_id, Publisher.all, :id, :name, prompt: 'Choose a publisher' %>
+      <%%= form.label :publisher_id, value: 'Publisher' %>
+      <%%= form.collection_select :publisher_id, Publisher.all, :id, :name, prompt: 'Choose a publisher' %>
     </div>
 
     <div class="actions">
-      <%= form.submit %>
+      <%%= form.submit %>
     </div>
-  <% end %>
+  <%% end %>
 
   <br>
 
-  <%= link_to 'Back', posts_path %>
+  <%%= link_to 'Back', posts_path %>
 ~~~
 {: data-target="code-highlighter.erb"}
 
@@ -312,3 +317,11 @@ Service objects... Some see them as best practice, others as an anti-pattern. Th
 * [Reddit: Where did the concept of service object come from?](https://www.reddit.com/r/rails/comments/itivdn/where_did_concept_of_service_object_come_from/)
 * [Reddit: Is command pattern a common thing in the industry?](https://www.reddit.com/r/rails/comments/jvxhew/is_command_pattern_a_common_thing_in_the_industry/)
 * [Jason Swett: Beware of “service objects” in Rails](https://www.codewithjason.com/rails-service-objects/)
+
+### Read more about service objects
+
+I've written another article about service objects if you're interested: 
+
+<% other_articles(current_article, tag: 'service object alternatives').each do |article| %>
+* <%= article_link article %>
+<% end %>

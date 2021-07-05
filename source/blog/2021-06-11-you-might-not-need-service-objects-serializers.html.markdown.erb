@@ -3,7 +3,7 @@
 title: "Serializers - alternatives to service objects"
 priority_title: "Service object alternatives: Serializers"
 date: 2021-06-11 01:28 UTC
-tags: rails,service objects,single responsibility
+tags: rails,service objects,single responsibility, service object alternatives
 description: How to improve a specific type of service object and, who knows, get rid of it completely.
 
 ---
@@ -15,10 +15,10 @@ description: How to improve a specific type of service object and, who knows, ge
 
 <h2 style="color:red;">This article is currently being rewritten. It addresses the wrong problem and people find it confusing. Sorry :(</h2>
 
-# <%= title(current_article) %>
+# Service object alternatives: Serializers
 
 <div class="hero">
-  ![publication feature](2021-06-11-your-service-object-probably-has-the-wrong-responsibility/be-the-change.jpg)
+  ![publication feature](2021-06-11-you-might-not-need-service-objects-serializers/be-the-change.jpg)
   <small class="d-block text-center">
     <span>
       Photo by <a href="https://unsplash.com/@brett_jordan?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Brett Jordan</a> on <a href="https://unsplash.com/s/photos/responsibility?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>  
@@ -280,5 +280,9 @@ Other steps to improve the code would be to:
 
 ### Read more about service objects
 
-<% article = blog.articles.find { |article| article.title == "An Alternative to Service Objects" } %>
-I've written another article about service objects if you're interested: <%= link_to article.title, article.url %>.
+I've written another article about service objects if you're interested: 
+
+<% other_articles(current_article, tag: 'service object alternatives').each do |article| %>
+* <%= article_link article %>
+<% end %>
+

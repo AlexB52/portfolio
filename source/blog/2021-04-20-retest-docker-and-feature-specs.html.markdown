@@ -1,6 +1,6 @@
 ---
 
-title: Retest - Docker & Feature Specs
+title: Retest - Docker & feature Specs
 date: 2021-04-20 05:38 UTC
 tags: docker, E2E tests, retest, feature spec, github action, github workflow
 description: This article describes the Docker setup used in the end-to-end (2E2) testing of my ruby gem retest.
@@ -13,7 +13,7 @@ description: This article describes the Docker setup used in the end-to-end (2E2
 
 <small style="float:right;"> _20 April 2021_ </small>
 
-# Retest - Docker & Feature specs
+# Retest - Docker & feature specs
 
 Last year, I read the amazing [99 Bottles of OOP](https://sandimetz.com/99bottles) by Sandi Metz, Katrina Owen & TJ Stankus and decided to create a tool to help me refactor code based on the method described in the book. I work in a consultancy and get to touch multiple codebases regularly. I wanted a tool that would allow me to refactor code on **any ruby projects** with no setup. [Retest][retest] was born.
 

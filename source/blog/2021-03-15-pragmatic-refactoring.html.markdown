@@ -1,6 +1,6 @@
 ---
 
-title: Pragmatic Refactoring 
+title: Pragmatic refactoring 
 date: 2021-03-15 21:55 UTC
 tags: retest refactoring rubygem sandi metz
 description: A 99 Bottles of OOP book review and introducing retest, a gem to help you refactor code on the fly.
@@ -12,7 +12,7 @@ description: A 99 Bottles of OOP book review and introducing retest, a gem to he
 
 <small style="float:right;"> _18 March 2021_ </small>
 
-# Pragmatic Refactoring with _99 Bottles of OOP_
+# Pragmatic refactoring with _99 Bottles of OOP_
 
 This article is sponsored by [retest][retest], a gem that helps you refactor ruby projects on the fly just like the methodology described in _[99 Bottles of OOP][book]_. Don't forget to smash like, subscribe and leave a comment.... I mean... Try retest, star the repository and leave an issue, now back to the article.
 
