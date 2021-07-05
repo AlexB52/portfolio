@@ -6,10 +6,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta property="og:title" content="<%= current_page.data.title %>"/>
-    <meta property="og:description" content="<%= current_page.data.description %>"/>
+    <meta property="og:title" content="<%= current_article.title %>"/>
+    <meta property="og:description" content="<%= current_article.data.description %>"/>
 
-    <title><%= current_page.data.title || "Bog - Alex Barret" %></title>
+    <title><%= current_article.title || "Bog - Alex Barret" %></title>
 
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:300,400,700&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "site" %>
